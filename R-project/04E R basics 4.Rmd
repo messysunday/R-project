@@ -1,0 +1,77 @@
+---
+title: "04E - R basics 4"
+---
+
+
+
+# R Lists 
+
+Lists will allow us to store a variety of data structures under a single variable. This means we could store a vecor,matrix, data frame, etc. under a single list. For example:
+
+
+Create a vector
+```{r}
+v <- c(1,2,3,4,5)
+```
+
+
+Create a matrix
+```{r}
+m <- matrix(1:10,nrow=2)
+```
+
+
+Create a data frame
+```{r}
+df <- women
+```
+
+
+# Using list()
+
+```{r}
+li <- list(v,m,df)
+li
+```
+
+You will notice that the list() assigned numbers to each of the objects in the list, but we can also assign names in the following manner:
+
+```{r}
+li <- list(sample_vec = v,sample_mat = m, sample_df = df)
+li
+```
+
+
+#Selecting objects from a list
+
+Single brackets
+```{r}
+li[1] # By index
+```
+
+```{r}
+li['sample_vec'] # By name
+```
+
+
+```{r}
+li[['sample_vec']]
+```
+
+```{r}
+li$sample_vec # Can also use $ notation
+```
+
+You can also index on top of this once you've selected the object from the list, for example:
+
+```{r}
+li[['sample_vec']][1] # Second set of indexing
+```
+
+```{r}
+li[['sample_mat']][1:2,1:2]
+```
+
+```{r}
+li[['sample_df']]['height']
+```

@@ -1,0 +1,110 @@
+---
+title: "Big Mac Index"
+---
+
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(tidytuesdayR)
+library(scales)
+library(tidylo)
+library(ggrepel)
+library(gganimate)
+library(widyr)
+
+```
+
+
+  Dane
+  
+```{r message=FALSE, warning=FALSE}
+tt <- tt_load("2020-12-22")
+
+
+
+data <- tt$`big-mac`
+```
+
+```{r}
+
+big_mac <- data %>% 
+  rename(country = name) %>% 
+  add_count(country, name = "country_total") %>% 
+  arrange(country, date)
+
+big_mac
+```
+
+
+
+```{r}
+big_mac %>% 
+  filter(country_total == max(country_total)) %>% 
+  group_by(country) %>% 
+  summarize(big_mac_inflation = last(local_price)/first(local_price)) %>% 
+  arrange(desc(big_mac_inflation)) %>% 
+  mutate(country = fct_reorder(country, big_mac_inflation))
+
+```
+
+
+
+```{r}
+big_mac %>% 
+  filter(country_total == max(country_total)) %>% 
+  group_by(date) %>% 
+  mutate(usd_price = local_price[iso_a3 == "USA"],
+         us_gdp = gdp_dollar[iso_a3 == "USA"]) %>% 
+  ungroup() %>% 
+  mutate(big_mac_ex = local_price/usd_price) %>%
+  select(date, iso_a3, country, local_price, dollar_ex, usd_price, big_mac_ex, usd_raw, gdp_dollar, usd_adjusted) %>% 
+  mutate(usd_recalculated = (big_mac_ex - dollar_ex)/dollar_ex) %>% 
+filter(!is.na(gdp_dollar))
+  
+```
+
+
+
+
+```{r}
+big_mac %>% 
+  group_by(date) %>% 
+  mutate(usd_price = local_price[iso_a3 == "USA"],
+         us_gdp = gdp_dollar[iso_a3 == "USA"]) %>% 
+  ungroup() %>% 
+  filter(country == "Argentina",
+         !is.na(gdp_dollar)) %>% 
+  mutate(price_from_usd = usd_price *dollar_ex) %>% 
+  select(date, local_price, price_from_usd)
+```
+
+
+
+
+```{r}
+big_mac %>% 
+  select(date, country, local_price, dollar_ex, usd_raw, gdp_dollar, ends_with("adjusted")) %>% 
+  pivot_longer(ends_with("adjusted"),
+               names_to = "base_currency",
+               values_to = "adjusted") %>% 
+  mutate(base_currency = str_to_upper(str_remove(base_currency, "_adjusted"))) %>% 
+  filter(!is.na(gdp_dollar))
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

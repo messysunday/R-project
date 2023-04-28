@@ -1,0 +1,54 @@
+---
+title: "Netflix titles"
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(tidytuesdayR)
+library(scales)
+library(lubridate)
+```
+
+# Load the weekly Data
+
+Dowload the weekly data and make available in the `tt` object.
+
+```{r Load}
+
+tt <- tt_load("2021-04-20")
+
+netflix <- tt$netflix_titles %>%
+  separate(duration, c("duration", "duration_units"), sep = " ", convert = TRUE) %>%
+  mutate(date_added = mdy(date_added),
+         year_added = year(date_added)) %>%
+  mutate(mature = rating %in% c("TV-MA", "R", "NC-17"))
+```
+
+
+
+```{r}
+netflix %>%
+  count(year = release_year, type) %>%
+  filter(year < 2021) %>% 
+  group_by(type) %>%
+  mutate(percent = n / sum(n)) 
+```
+
+```{r}
+netflix %>%
+  filter(type == "Movie") %>%
+  mutate(decade = 10 * (release_year %/% 10))
+```
+
+
+
+```{r}
+netflix %>%
+  separate_rows(listed_in, sep = ", ") %>%
+  group_by(type, genre = listed_in) %>%
+  summarize(
+    n = n(),
+    median_duration = median(duration),
+    median_year = median(release_year)) %>%
+  arrange(desc(n))
+```

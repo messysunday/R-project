@@ -1,0 +1,80 @@
+---
+title: "09E Data Input&Output"
+---
+
+# Creating a dataframe
+
+```{r}
+let <- letters[1:10]
+num <- 1:10
+mix <- paste0(num, let)
+
+df <- data.frame(
+  letters= let,
+  numbers = num,
+  mixed = mix
+  )
+
+df
+```
+
+# Write & read
+
+## write.csv()
+
+```{r}
+write.csv(df, file = "data1.csv", row.names = FALSE)
+```
+
+```{r}
+df <- read.csv("data1.csv")
+df
+```
+
+# Online files
+
+```{r}
+df_2 <- read.csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-02-28/language_countries.csv")
+df_2
+```
+
+# readr library (recommended)
+
+cheatsheet - https://posit.co/wp-content/uploads/2022/10/data-import.pdf
+
+
+Check if the library is installed
+```{r}
+libs <- "readr"
+
+installed_libs <- libs %in% rownames(installed.packages())
+if (any(installed_libs == F)) {
+    install.packages(libs[!installed_libs])
+}
+```
+
+```{r}
+library(readr)
+```
+
+
+```{r}
+write_csv(df_2, "languages.csv")
+```
+
+
+```{r}
+df_3 <- read_csv("languages.csv")
+df_3
+```
+
+
+```{r}
+# skipping rows is sometimes useful
+
+read_csv(
+  "languages.csv",
+  skip = 4
+  )
+```
+
